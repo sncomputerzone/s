@@ -126,6 +126,51 @@ button{
     letter-spacing:3px;
 }
 
+
+/* =========================================
+   BALANCE
+========================================= */
+
+.balance-box{
+    margin-top:15px;
+    padding:15px;
+    background:#ffffff;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.balance-title{
+    font-weight:bold;
+    color:#0d47a1;
+    font-size:17px;
+}
+
+.balance-amount{
+    margin-top:8px;
+    font-size:26px;
+    font-weight:bold;
+    color:#198754;
+}
+
+.balance-input-row{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+}
+
+.balance-btn{
+    background:#198754;
+    color:white;
+    white-space:nowrap;
+}
+
+.balance-status{
+    margin-top:10px;
+    min-height:20px;
+    font-size:14px;
+}
+
+
 .delete-user{
     background:#d32f2f;
     color:white;
@@ -233,6 +278,14 @@ button{
 
     .container{
         width:94%;
+    }
+
+    .balance-input-row{
+        flex-direction:column;
+    }
+
+    .balance-btn{
+        width:100%;
     }
 }
 </style>
@@ -437,7 +490,7 @@ async function searchUser(){
     const { data, error } =
         await supabaseClient
         .from("users")
-        .select("id,name,mobile_number,pin,created_at")
+        .select("id,name,mobile_number,pin,balance,created_at")
         .eq("mobile_number", mobile)
         .maybeSingle();
 
@@ -509,6 +562,48 @@ async function showUser(user){
 
             </div>
 
+
+            <!-- BALANCE -->
+
+            <div class="balance-box">
+
+                <div class="balance-title">
+                    💰 Available Balance
+                </div>
+
+                <div
+                    class="balance-amount"
+                    id="currentBalance"
+                >
+                    ₹ ${formatBalance(user.balance)}
+                </div>
+
+                <div class="balance-input-row">
+
+                    <input
+                        type="text"
+                        id="balanceAmount"
+                        inputmode="decimal"
+                        placeholder="Enter amount e.g. 50 or -10"
+                    >
+
+                    <button
+                        class="balance-btn"
+                        onclick="updateBalance('${user.id}')"
+                    >
+                        ADD / UPDATE BALANCE
+                    </button>
+
+                </div>
+
+                <div
+                    id="balanceStatus"
+                    class="balance-status"
+                ></div>
+
+            </div>
+
+
             <button
                 class="delete-user"
                 onclick="deleteUser('${user.id}')"
@@ -569,6 +664,145 @@ async function showUser(user){
 
 
     await loadReceivings(user.id);
+
+}
+
+
+/* =========================================
+   UPDATE BALANCE
+========================================= */
+
+async function updateBalance(userId){
+
+    const amountInput =
+        document.getElementById("balanceAmount");
+
+    const status =
+        document.getElementById("balanceStatus");
+
+    const balanceDisplay =
+        document.getElementById("currentBalance");
+
+
+    if(!amountInput || !status || !balanceDisplay){
+        return;
+    }
+
+
+    let amountText =
+        amountInput.value.trim();
+
+
+    if(!amountText){
+
+        status.style.color = "red";
+
+        status.textContent =
+            "Please enter an amount.";
+
+        return;
+    }
+
+
+    amountText =
+        amountText.replace(/^\+/,"");
+
+
+    const amount =
+        Number(amountText);
+
+
+    if(!Number.isFinite(amount)){
+
+        status.style.color = "red";
+
+        status.textContent =
+            "Please enter a valid amount.";
+
+        return;
+    }
+
+
+    if(amount === 0){
+
+        status.style.color = "red";
+
+        status.textContent =
+            "Amount cannot be 0.";
+
+        return;
+    }
+
+
+    status.style.color = "#0d47a1";
+
+    status.textContent =
+        "Updating balance...";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "update_user_balance",
+            {
+                p_user_id: userId,
+                p_amount: amount
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        status.style.color = "red";
+
+        status.textContent =
+            error.message ||
+            "Balance update failed.";
+
+        return;
+    }
+
+
+    balanceDisplay.textContent =
+        "₹ " + formatBalance(data);
+
+
+    amountInput.value = "";
+
+
+    status.style.color = "green";
+
+    status.textContent =
+        "Balance updated successfully.";
+
+
+}
+
+
+/* =========================================
+   BALANCE FORMAT
+========================================= */
+
+function formatBalance(value){
+
+    const number =
+        Number(value || 0);
+
+    if(!Number.isFinite(number)){
+        return "0";
+    }
+
+    return number.toLocaleString(
+        "en-IN",
+        {
+            minimumFractionDigits:0,
+            maximumFractionDigits:2
+        }
+    );
 
 }
 
