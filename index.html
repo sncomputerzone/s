@@ -4,278 +4,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SN Internet Zone</title>
+<title>SN INTERNET ZONE</title>
 
 <style>
 
 /* =========================
-   BASIC
+   BASIC PAGE
 ========================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-html,
-body{
-    min-height:100%;
-}
-
-body{
-    min-height:100vh;
-    font-family:Arial, Helvetica, sans-serif;
-    color:#102030;
-    overflow-x:hidden;
-
-    background:
-        radial-gradient(
-            circle at 20% 15%,
-            rgba(255,255,255,.95),
-            transparent 25%
-        ),
-        radial-gradient(
-            circle at 80% 80%,
-            rgba(255,255,255,.7),
-            transparent 30%
-        ),
-        linear-gradient(
-            135deg,
-            #d8e3ea,
-            #ffffff,
-            #cbd7df
-        );
-
-    position:relative;
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #222;
 }
 
 
 /* =========================
    MAIN CONTAINER
-   PAGE LIGHTNING REMOVED
 ========================= */
 
-.container{
-
-    width:94%;
-    max-width:1100px;
-
-    margin:20px auto;
-    padding:20px;
-
-    border-radius:30px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.55),
-            rgba(255,255,255,.22)
-        );
-
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.85);
-
-    box-shadow:
-
-        0 20px 50px rgba(0,0,0,.18),
-
-        inset
-        0 1px 2px
-        rgba(255,255,255,.95),
-
-        inset
-        0 -1px 2px
-        rgba(0,0,0,.08);
-
-    position:relative;
-
-    overflow:hidden;
+.container {
+    width: 100%;
+    max-width: 520px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 20px;
 }
 
 
 /* =========================
-   HEADER
+   LOGO AREA
 ========================= */
 
-.header{
-
-    display:flex;
-    align-items:center;
-
-    gap:18px;
-
-    padding:
-        8px
-        5px
-        20px;
+.logo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 18px;
 }
 
 
-/* =========================
-   LOGO
-========================= */
+/* Tricolor rotating outer circle */
 
-.logo-box{
+.logo-border {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    padding: 4px;
 
-    width:78px;
-    height:78px;
+    background: conic-gradient(
+        #ff9933,
+        white,
+        #138808,
+        #ff9933
+    );
 
-    min-width:78px;
+    animation: rotateTricolor 3s linear infinite;
 
-    border-radius:50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #d5dfe6
-        );
 
-    border:
-        3px solid
-        rgba(255,255,255,.9);
+/* Logo itself */
 
-    box-shadow:
+.logo {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
 
-        0 8px 20px
-        rgba(0,0,0,.20),
+    background: white;
 
-        inset
-        5px 5px 12px
-        rgba(255,255,255,.9),
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        inset
-        -5px -5px 12px
-        rgba(0,0,0,.12);
+    font-size: 25px;
+    font-weight: bold;
 
-    display:flex;
+    color: #0d47a1;
 
-    justify-content:center;
-    align-items:center;
-
-    overflow:hidden;
-
-    position:relative;
+    overflow: hidden;
 }
 
 
 /*
-अपना LOGO लगाने के लिए:
+   बाद में अपना Logo लगाना हो तो
+   .logo के अंदर यह लगाएं:
 
-<div class="logo-placeholder">SN</div>
+   <img src="images/logo.png">
 
-को हटाकर:
-
-<img
-    src="images/logo.png"
-    alt="SN Internet Zone Logo"
->
+   और CSS:
+   .logo img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+   }
 */
 
-.logo-box img{
+@keyframes rotateTricolor {
+    from {
+        transform: rotate(0deg);
+    }
 
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-}
-
-
-.logo-placeholder{
-
-    font-size:25px;
-    font-weight:bold;
-
-    color:#0759a5;
-
-    text-shadow:
-        0 2px 4px
-        rgba(0,0,0,.2);
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
 /* =========================
    TITLE
-   TRICOLOR SHINING
 ========================= */
 
-.title-area h1{
+.title {
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: 1px;
 
-    font-size:
-        clamp(
-            25px,
-            5vw,
-            42px
-        );
+    background: linear-gradient(
+        90deg,
+        #ff9933 0%,
+        #ff9933 32%,
+        #222 32%,
+        #222 52%,
+        #138808 52%,
+        #138808 84%,
+        #ff9933 84%,
+        #ff9933 100%
+    );
 
-    letter-spacing:2px;
+    background-size: 200% auto;
 
-    background:
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 
-        linear-gradient(
-            90deg,
-
-            #ff9933 0%,
-            #ff9933 30%,
-
-            #ffffff 42%,
-            #ffffff 58%,
-
-            #138808 70%,
-            #138808 100%
-        );
-
-    background-size:300% auto;
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    color:transparent;
-
-    animation:
-        tricolorShine
-        4s linear infinite;
-
-    filter:
-        drop-shadow(
-            0 3px 3px
-            rgba(0,0,0,.20)
-        );
+    animation: tricolorMove 3s linear infinite;
 }
 
-
-@keyframes tricolorShine{
-
-    0%{
-        background-position:
-            0% center;
+@keyframes tricolorMove {
+    0% {
+        background-position: 200% center;
     }
 
-    50%{
-        background-position:
-            150% center;
+    100% {
+        background-position: -200% center;
     }
-
-    100%{
-        background-position:
-            300% center;
-    }
-
 }
 
-
-.title-area p{
-
-    margin-top:5px;
-
-    font-size:14px;
-
-    color:#455a64;
-
-    letter-spacing:1px;
+.subtitle {
+    text-align: center;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    color: #666;
 }
 
 
@@ -283,360 +179,294 @@ body{
    SLIDER
 ========================= */
 
-.slider{
+.slider {
+    position: relative;
+    width: 100%;
+    height: 220px;
 
-    width:100%;
-    height:300px;
+    overflow: hidden;
 
-    position:relative;
+    border-radius: 15px;
+    border: 1px solid #ccc;
 
-    overflow:hidden;
+    background: #ddd;
 
-    border-radius:24px;
-
-    border:
-        2px solid
-        rgba(255,255,255,.8);
-
-    box-shadow:
-
-        0 15px 35px
-        rgba(0,0,0,.22),
-
-        inset
-        0 2px 5px
-        rgba(255,255,255,.8);
-
-    background:#dfe7ec;
+    margin-bottom: 20px;
 }
 
 
-.slide{
+/* Slides */
 
-    position:absolute;
+.slides {
+    display: flex;
+    width: 500%;
+    height: 100%;
 
-    inset:0;
+    animation: slideMove 15s infinite;
+}
 
-    opacity:0;
+.slide {
+    width: 20%;
+    height: 100%;
+    position: relative;
 
-    transition:
-        opacity 1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    overflow:hidden;
+    overflow: hidden;
 }
 
 
-.slide.active{
+/* Placeholder colors */
 
-    opacity:1;
+.slide:nth-child(1) {
+    background: #e8f1ff;
+}
+
+.slide:nth-child(2) {
+    background: #fff0e5;
+}
+
+.slide:nth-child(3) {
+    background: #e8f7e8;
+}
+
+.slide:nth-child(4) {
+    background: #fff9d9;
+}
+
+.slide:nth-child(5) {
+    background: #eee8ff;
 }
 
 
-.slide img{
+/* Slider text */
 
-    width:100%;
-    height:100%;
+.slide-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: #444;
 
-    object-fit:cover;
-}
-
-
-/* =========================
-   SLIDER PLACEHOLDER
-========================= */
-
-.slide-placeholder{
-
-    width:100%;
-    height:100%;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    font-size:45px;
-    font-weight:bold;
-
-    color:white;
-
-    background:
-
-        linear-gradient(
-            135deg,
-
-            #ff9933,
-            #ffffff,
-            #138808,
-            #0d47a1
-        );
-
-    background-size:300% 300%;
-
-    animation:
-        sliderBackground
-        8s ease infinite;
-}
-
-
-@keyframes sliderBackground{
-
-    0%{
-        background-position:
-            0% 50%;
-    }
-
-    50%{
-        background-position:
-            100% 50%;
-    }
-
-    100%{
-        background-position:
-            0% 50%;
-    }
-
+    z-index: 2;
 }
 
 
 /* =========================
-   SLIDER LIGHT
+   WATER DROPS
 ========================= */
 
-.slider::after{
+.drop {
+    position: absolute;
 
-    content:"";
+    top: -50px;
 
-    position:absolute;
+    width: 14px;
+    height: 22px;
 
-    top:0;
+    border-radius: 50% 50% 55% 55%;
 
-    left:-100%;
+    background: rgba(255, 255, 255, 0.45);
 
-    width:45%;
+    border: 1px solid rgba(255,255,255,0.75);
 
-    height:100%;
+    box-shadow:
+        inset 3px 3px 5px rgba(255,255,255,0.8),
+        inset -2px -2px 5px rgba(0,0,0,0.08);
 
-    background:
+    backdrop-filter: blur(1px);
 
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,.30),
-            transparent
-        );
+    z-index: 5;
 
-    transform:
-        skewX(-20deg);
-
-    animation:
-        sliderShine
-        6s infinite;
+    animation: waterSlide linear infinite;
 }
 
 
-@keyframes sliderShine{
+/* Different drops */
 
-    0%{
-        left:-100%;
+.drop1 {
+    left: 12%;
+    animation-duration: 6s;
+    animation-delay: 0s;
+}
+
+.drop2 {
+    left: 27%;
+    width: 9px;
+    height: 16px;
+    animation-duration: 7s;
+    animation-delay: 1s;
+}
+
+.drop3 {
+    left: 43%;
+    width: 17px;
+    height: 25px;
+    animation-duration: 8s;
+    animation-delay: 2s;
+}
+
+.drop4 {
+    left: 61%;
+    width: 11px;
+    height: 18px;
+    animation-duration: 6.5s;
+    animation-delay: 1.5s;
+}
+
+.drop5 {
+    left: 78%;
+    width: 15px;
+    height: 23px;
+    animation-duration: 7.5s;
+    animation-delay: 3s;
+}
+
+.drop6 {
+    left: 90%;
+    width: 8px;
+    height: 14px;
+    animation-duration: 5.5s;
+    animation-delay: 2s;
+}
+
+
+/* Water drop slowly moving downward */
+
+@keyframes waterSlide {
+
+    0% {
+        top: -50px;
+        transform: translateX(0) scale(0.8);
+        opacity: 0;
     }
 
-    55%,
-    100%{
-        left:150%;
+    10% {
+        opacity: 0.8;
     }
 
+    30% {
+        transform: translateX(4px) scale(1);
+    }
+
+    50% {
+        transform: translateX(-3px) scale(1.05);
+    }
+
+    70% {
+        transform: translateX(3px) scale(0.95);
+    }
+
+    90% {
+        opacity: 0.6;
+    }
+
+    100% {
+        top: 240px;
+        transform: translateX(-2px) scale(0.9);
+        opacity: 0;
+    }
 }
 
 
 /* =========================
-   DOTS
+   SLIDE ANIMATION
 ========================= */
 
-.dots{
+@keyframes slideMove {
 
-    position:absolute;
+    0% {
+        transform: translateX(0);
+    }
 
-    bottom:12px;
-    left:50%;
+    17% {
+        transform: translateX(0);
+    }
 
-    transform:
-        translateX(-50%);
+    20% {
+        transform: translateX(-20%);
+    }
 
-    display:flex;
+    37% {
+        transform: translateX(-20%);
+    }
 
-    gap:8px;
+    40% {
+        transform: translateX(-40%);
+    }
 
-    z-index:3;
-}
+    57% {
+        transform: translateX(-40%);
+    }
 
+    60% {
+        transform: translateX(-60%);
+    }
 
-.dot{
+    77% {
+        transform: translateX(-60%);
+    }
 
-    width:9px;
-    height:9px;
+    80% {
+        transform: translateX(-80%);
+    }
 
-    border-radius:50%;
+    97% {
+        transform: translateX(-80%);
+    }
 
-    background:
-        rgba(255,255,255,.55);
-
-    box-shadow:
-        0 2px 5px
-        rgba(0,0,0,.3);
-
-    transition:.3s;
-}
-
-
-.dot.active{
-
-    width:24px;
-
-    border-radius:10px;
-
-    background:white;
+    100% {
+        transform: translateX(0);
+    }
 }
 
 
 /* =========================
-   LOGIN CARD
+   LOGIN BOX
 ========================= */
 
-.login-card{
+.login-box {
+    width: 100%;
+    background: #ffffff;
 
-    margin-top:25px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
 
-    padding:25px;
-
-    border-radius:25px;
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.75),
-            rgba(255,255,255,.25)
-        );
-
-    border:
-        1px solid
-        rgba(255,255,255,.9);
-
-    box-shadow:
-
-        0 15px 35px
-        rgba(0,0,0,.15),
-
-        inset
-        0 2px 5px
-        rgba(255,255,255,.9);
-
-    position:relative;
-
-    overflow:hidden;
+    padding: 20px;
 }
 
 
-.login-title{
-
-    text-align:center;
-
-    font-size:23px;
-
-    font-weight:bold;
-
-    color:#064f91;
-
-    margin-bottom:18px;
+.input-group {
+    margin-bottom: 15px;
 }
 
 
-/* =========================
-   FORM
-========================= */
-
-.form-row{
-
-    display:flex;
-
-    gap:12px;
-
-    align-items:end;
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 7px;
 }
 
 
-.input-group{
+.input-group input {
+    width: 100%;
 
-    flex:1;
+    height: 48px;
+
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+    padding: 0 14px;
+
+    font-size: 16px;
+
+    outline: none;
 }
 
 
-.input-group label{
-
-    display:block;
-
-    font-size:12px;
-
-    font-weight:bold;
-
-    margin-bottom:6px;
-
-    color:#43515b;
-}
-
-
-.input-group input{
-
-    width:100%;
-
-    height:52px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:15px;
-
-    padding:
-        0 16px;
-
-    font-size:16px;
-
-    background:
-        rgba(255,255,255,.75);
-
-    box-shadow:
-
-        inset
-        3px 3px 8px
-        rgba(0,0,0,.10),
-
-        inset
-        -3px -3px 8px
-        rgba(255,255,255,.9);
-
-    border:
-        1px solid
-        rgba(255,255,255,.8);
-}
-
-
-.input-group input:focus{
-
-    box-shadow:
-
-        0 0 0 3px
-        rgba(33,150,243,.18),
-
-        inset
-        2px 2px 6px
-        rgba(0,0,0,.08);
+.input-group input:focus {
+    border-color: #0d47a1;
 }
 
 
@@ -644,78 +474,27 @@ body{
    OPEN BUTTON
 ========================= */
 
-.open-btn{
+.open-btn {
+    width: 100%;
 
-    height:52px;
+    height: 48px;
 
-    padding:
-        0 20px;
+    border: none;
+    border-radius: 10px;
 
-    border:none;
+    background: #0d47a1;
+    color: white;
 
-    border-radius:14px;
+    font-size: 17px;
+    font-weight: bold;
 
-    background:
+    cursor: pointer;
 
-        linear-gradient(
-            145deg,
-            #0d6efd,
-            #064f9c
-        );
-
-    color:white;
-
-    font-size:13px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    box-shadow:
-
-        0 6px 15px
-        rgba(0,0,0,.22),
-
-        inset
-        0 1px 2px
-        rgba(255,255,255,.45);
-
-    transition:.2s;
+    margin-top: 5px;
 }
 
-
-.open-btn:hover{
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-
-        0 9px 20px
-        rgba(0,0,0,.25);
-}
-
-
-.open-btn:active{
-
-    transform:
-        scale(.96);
-}
-
-
-/* =========================
-   FOOTER
-========================= */
-
-.footer{
-
-    text-align:center;
-
-    margin-top:20px;
-
-    font-size:12px;
-
-    color:#60717c;
+.open-btn:hover {
+    background: #083477;
 }
 
 
@@ -723,112 +502,38 @@ body{
    MOBILE
 ========================= */
 
-@media(max-width:650px){
+@media (max-width: 500px) {
 
-    .container{
-
-        width:96%;
-
-        padding:13px;
-
-        margin:10px auto;
-
-        border-radius:22px;
+    body {
+        padding: 12px;
     }
 
-
-    .header{
-
-        gap:12px;
-
-        padding-bottom:14px;
+    .container {
+        padding: 15px;
     }
 
-
-    .logo-box{
-
-        width:62px;
-        height:62px;
-
-        min-width:62px;
+    .logo-border {
+        width: 70px;
+        height: 70px;
     }
 
-
-    .logo-placeholder{
-
-        font-size:20px;
+    .logo {
+        width: 62px;
+        height: 62px;
+        font-size: 21px;
     }
 
-
-    .title-area h1{
-
-        font-size:22px;
-
-        letter-spacing:1px;
+    .title {
+        font-size: 21px;
     }
 
-
-    .title-area p{
-
-        font-size:11px;
+    .slider {
+        height: 180px;
     }
 
-
-    .slider{
-
-        height:190px;
-
-        border-radius:18px;
+    .slide-text {
+        font-size: 25px;
     }
-
-
-    .slide-placeholder{
-
-        font-size:30px;
-    }
-
-
-    .login-card{
-
-        padding:18px;
-
-        border-radius:20px;
-    }
-
-
-    .form-row{
-
-        gap:7px;
-    }
-
-
-    .input-group input{
-
-        height:48px;
-
-        padding:
-            0 10px;
-
-        font-size:14px;
-    }
-
-
-    .open-btn{
-
-        height:48px;
-
-        padding:
-            0 12px;
-
-        font-size:11px;
-    }
-
-
-    .input-group label{
-
-        font-size:10px;
-    }
-
 }
 
 </style>
@@ -837,368 +542,245 @@ body{
 
 <body>
 
-
 <div class="container">
 
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+    <!-- =====================
+         LOGO + TITLE
+    ====================== -->
 
-    <div class="header">
+    <div class="logo-area">
 
+        <div class="logo-border">
 
-        <!-- LOGO -->
-
-        <div class="logo-box">
-
-            <!--
-            बाद में अपना Logo लगाने के लिए:
-
-            <img
-                src="images/logo.png"
-                alt="SN Internet Zone Logo"
-            >
-            -->
-
-            <div class="logo-placeholder">
+            <div class="logo">
                 SN
             </div>
 
         </div>
 
 
-        <!-- TITLE -->
-
-        <div class="title-area">
-
-            <h1>
+        <div>
+            <div class="title">
                 SN INTERNET ZONE
-            </h1>
+            </div>
 
-            <p>
+            <div class="subtitle">
                 Welcome to SN Internet Zone
-            </p>
-
+            </div>
         </div>
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================
          SLIDER
-    ========================== -->
+    ====================== -->
 
     <div class="slider">
 
+        <div class="slides">
 
-        <!-- SLIDE 1 -->
 
-        <div class="slide active">
+            <!-- SLIDE 1 -->
 
-            <!--
-            बाद में:
+            <div class="slide">
 
-            <img
-                src="images/slide1.jpg"
-                alt="Slide 1"
-            >
-            -->
+                <div class="slide-text">
+                    SLIDE 1
+                </div>
 
-            <div class="slide-placeholder">
-                SLIDE 1
+                <span class="drop drop1"></span>
+                <span class="drop drop2"></span>
+                <span class="drop drop3"></span>
+                <span class="drop drop4"></span>
+                <span class="drop drop5"></span>
+                <span class="drop drop6"></span>
+
+            </div>
+
+
+            <!-- SLIDE 2 -->
+
+            <div class="slide">
+
+                <div class="slide-text">
+                    SLIDE 2
+                </div>
+
+                <span class="drop drop1"></span>
+                <span class="drop drop2"></span>
+                <span class="drop drop3"></span>
+                <span class="drop drop4"></span>
+                <span class="drop drop5"></span>
+                <span class="drop drop6"></span>
+
+            </div>
+
+
+            <!-- SLIDE 3 -->
+
+            <div class="slide">
+
+                <div class="slide-text">
+                    SLIDE 3
+                </div>
+
+                <span class="drop drop1"></span>
+                <span class="drop drop2"></span>
+                <span class="drop drop3"></span>
+                <span class="drop drop4"></span>
+                <span class="drop drop5"></span>
+                <span class="drop drop6"></span>
+
+            </div>
+
+
+            <!-- SLIDE 4 -->
+
+            <div class="slide">
+
+                <div class="slide-text">
+                    SLIDE 4
+                </div>
+
+                <span class="drop drop1"></span>
+                <span class="drop drop2"></span>
+                <span class="drop drop3"></span>
+                <span class="drop drop4"></span>
+                <span class="drop drop5"></span>
+                <span class="drop drop6"></span>
+
+            </div>
+
+
+            <!-- SLIDE 5 -->
+
+            <div class="slide">
+
+                <div class="slide-text">
+                    SLIDE 5
+                </div>
+
+                <span class="drop drop1"></span>
+                <span class="drop drop2"></span>
+                <span class="drop drop3"></span>
+                <span class="drop drop4"></span>
+                <span class="drop drop5"></span>
+                <span class="drop drop6"></span>
+
             </div>
 
         </div>
-
-
-        <!-- SLIDE 2 -->
-
-        <div class="slide">
-
-            <!--
-            <img
-                src="images/slide2.jpg"
-                alt="Slide 2"
-            >
-            -->
-
-            <div class="slide-placeholder">
-                SLIDE 2
-            </div>
-
-        </div>
-
-
-        <!-- SLIDE 3 -->
-
-        <div class="slide">
-
-            <!--
-            <img
-                src="images/slide3.jpg"
-                alt="Slide 3"
-            >
-            -->
-
-            <div class="slide-placeholder">
-                SLIDE 3
-            </div>
-
-        </div>
-
-
-        <!-- SLIDE 4 -->
-
-        <div class="slide">
-
-            <!--
-            <img
-                src="images/slide4.jpg"
-                alt="Slide 4"
-            >
-            -->
-
-            <div class="slide-placeholder">
-                SLIDE 4
-            </div>
-
-        </div>
-
-
-        <!-- SLIDE 5 -->
-
-        <div class="slide">
-
-            <!--
-            <img
-                src="images/slide5.jpg"
-                alt="Slide 5"
-            >
-            -->
-
-            <div class="slide-placeholder">
-                SLIDE 5
-            </div>
-
-        </div>
-
-
-        <!-- DOTS -->
-
-        <div class="dots">
-
-            <div class="dot active"></div>
-
-            <div class="dot"></div>
-
-            <div class="dot"></div>
-
-            <div class="dot"></div>
-
-            <div class="dot"></div>
-
-        </div>
-
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================
          LOGIN
-    ========================== -->
+    ====================== -->
 
-    <div class="login-card">
+    <div class="login-box">
 
+        <div class="input-group">
 
-        <div class="login-title">
-            User Login
-        </div>
+            <label>
+                Mobile Number
+            </label>
 
-
-        <div class="form-row">
-
-
-            <!-- MOBILE -->
-
-            <div class="input-group">
-
-                <label>
-                    Mobile Number
-                </label>
-
-                <input
-                    type="tel"
-                    id="mobile"
-                    maxlength="10"
-                    inputmode="numeric"
-                    autocomplete="tel"
-                    placeholder="10 Digit Mobile"
-                    oninput="
-                        this.value=
-                        this.value
-                        .replace(/[^0-9]/g,'')
-                        .slice(0,10)
-                    "
-                >
-
-            </div>
-
-
-            <!-- PIN -->
-
-            <div class="input-group">
-
-                <label>
-                    PIN
-                </label>
-
-                <input
-                    type="password"
-                    id="pin"
-                    maxlength="4"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    placeholder="4 Digit PIN"
-                    oninput="
-                        this.value=
-                        this.value
-                        .replace(/[^0-9]/g,'')
-                        .slice(0,4)
-                    "
-                >
-
-            </div>
-
-
-            <!-- OPEN -->
-
-            <button
-                type="button"
-                class="open-btn"
-                onclick="openPage()"
+            <input
+                type="tel"
+                id="mobile"
+                placeholder="Enter 10 digit mobile number"
+                maxlength="10"
+                inputmode="numeric"
             >
-                OPEN
-            </button>
-
 
         </div>
 
+
+        <div class="input-group">
+
+            <label>
+                PIN
+            </label>
+
+            <input
+                type="password"
+                id="pin"
+                placeholder="Enter 4 digit PIN"
+                maxlength="4"
+                inputmode="numeric"
+            >
+
+        </div>
+
+
+        <button
+            class="open-btn"
+            onclick="openNextPage()"
+        >
+            OPEN
+        </button>
+
     </div>
-
-
-    <!-- FOOTER -->
-
-    <div class="footer">
-
-        © SN Internet Zone
-
-    </div>
-
 
 </div>
 
 
 <script>
 
-
 /* =========================
-   SLIDER
+   ONLY NUMBERS
 ========================= */
 
-let currentSlide = 0;
+document.getElementById("mobile").addEventListener("input", function () {
 
-const slides =
-    document.querySelectorAll(".slide");
+    this.value = this.value.replace(/\D/g, "");
 
-const dots =
-    document.querySelectorAll(".dot");
+});
 
 
-function showSlide(index){
+document.getElementById("pin").addEventListener("input", function () {
 
-    slides.forEach(
-        slide =>
-        slide.classList.remove("active")
-    );
+    this.value = this.value.replace(/\D/g, "");
 
-    dots.forEach(
-        dot =>
-        dot.classList.remove("active")
-    );
-
-    slides[index]
-        .classList.add("active");
-
-    dots[index]
-        .classList.add("active");
-
-}
-
-
-setInterval(() => {
-
-    currentSlide++;
-
-    if(
-        currentSlide >=
-        slides.length
-    ){
-
-        currentSlide = 0;
-
-    }
-
-    showSlide(currentSlide);
-
-},5000);
+});
 
 
 /* =========================
-   OPEN BUTTON
+   OPEN NEXT PAGE
 ========================= */
 
-function openPage(){
+function openNextPage() {
 
-    const mobile =
-        document.getElementById("mobile")
-        .value;
-
-    const pin =
-        document.getElementById("pin")
-        .value;
+    const mobile = document.getElementById("mobile").value;
+    const pin = document.getElementById("pin").value;
 
 
-    if(mobile.length !== 10){
+    if (mobile.length !== 10) {
 
-        alert(
-            "Please enter a valid 10 digit mobile number."
-        );
+        alert("Please enter a valid 10 digit mobile number.");
 
         return;
-
     }
 
 
-    if(pin.length !== 4){
+    if (pin.length !== 4) {
 
-        alert(
-            "Please enter your 4 digit PIN."
-        );
+        alert("Please enter a valid 4 digit PIN.");
 
         return;
-
     }
 
 
-    window.location.href =
-        "home.html";
+    /* Next page */
+
+    window.location.href = "home.html";
 
 }
-
 
 </script>
-
 
 </body>
 </html>
