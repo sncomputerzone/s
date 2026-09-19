@@ -6,6 +6,8 @@
 
 <title>SN Internet Zone - Admin Login</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
     box-sizing:border-box;
@@ -24,10 +26,10 @@ body{
 .login-box{
     width:90%;
     max-width:380px;
-    background:#ffffff;
+    background:#fff;
     padding:30px 25px;
     border-radius:18px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.20);
+    box-shadow:0 10px 30px rgba(0,0,0,.20);
     text-align:center;
 }
 
@@ -41,9 +43,9 @@ body{
     justify-content:center;
     font-size:28px;
     font-weight:bold;
-    color:#ffffff;
+    color:#fff;
     background:#0d47a1;
-    border:5px solid #ffffff;
+    border:5px solid #fff;
     box-shadow:
         0 0 0 4px #ff9933,
         0 0 0 8px #138808;
@@ -81,14 +83,15 @@ button{
     border:none;
     border-radius:9px;
     background:#0d47a1;
-    color:white;
+    color:#fff;
     font-size:17px;
     font-weight:bold;
     cursor:pointer;
 }
 
-button:hover{
-    background:#083579;
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
 }
 
 #message{
@@ -134,12 +137,25 @@ button:hover{
 </div>
 
 <script>
-document.getElementById("loginBtn").addEventListener("click", function(){
+
+const SUPABASE_URL = "https://ikotfwggtwbmnepgvchu.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+const loginBtn = document.getElementById("loginBtn");
+const message = document.getElementById("message");
+
+
+loginBtn.addEventListener("click", async function(){
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-
-    const message = document.getElementById("message");
 
     if(!email || !password){
         message.style.color = "red";
@@ -147,10 +163,74 @@ document.getElementById("loginBtn").addEventListener("click", function(){
         return;
     }
 
+    loginBtn.disabled = true;
+    loginBtn.textContent = "LOGINING...";
     message.style.color = "#0d47a1";
-    message.textContent = "Login system connecting...";
+    message.textContent = "Checking login...";
+
+    try{
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+        if(error){
+            throw error;
+        }
+
+
+        const { data: adminData, error: adminError } =
+            await supabaseClient.rpc("is_admin");
+
+        if(adminError){
+            await supabaseClient.auth.signOut();
+            throw adminError;
+        }
+
+
+        if(adminData !== true){
+
+            await supabaseClient.auth.signOut();
+
+            message.style.color = "red";
+            message.textContent = "You are not authorized as Admin.";
+
+            loginBtn.disabled = false;
+            loginBtn.textContent = "LOGIN";
+
+            return;
+        }
+
+
+        message.style.color = "green";
+        message.textContent = "Login successful...";
+
+
+        setTimeout(function(){
+            window.location.href = "admin.html";
+        }, 700);
+
+
+    }catch(error){
+
+        console.error(error);
+
+        message.style.color = "red";
+
+        if(error.message){
+            message.textContent = error.message;
+        }else{
+            message.textContent = "Login failed. Please try again.";
+        }
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "LOGIN";
+    }
 
 });
+
 </script>
 
 </body>
