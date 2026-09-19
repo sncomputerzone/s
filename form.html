@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Receivings - SN INTERNET ZONE</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .balance-box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .balance-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .balance {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #0d47a1;
+        }
+
+        .receiving-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .receiving-box {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .receiving-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: #0d47a1;
+            color: white;
+        }
+
+        .download-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- AVAILABLE BALANCE -->
+    <div class="balance-box">
+        <div class="balance-title">Available Balance</div>
+        <div class="balance">₹ 0</div>
+    </div>
+
+    <!-- RECEIVINGS -->
+    <div class="receiving-title">
+        My Receivings
+    </div>
+
+    <div id="receivingList">
+        <div class="message">
+            Loading...
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://ikotfwggtwbmnepgvchu.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// GET LOGIN DETAILS
+const mobile = sessionStorage.getItem("sn_mobile");
+const pin = sessionStorage.getItem("sn_pin");
+
+
+// IF LOGIN DETAILS ARE MISSING
+if (!mobile || !pin) {
+
+    window.location.href = "index.html";
+
+}
+
+
+// LOAD RECEIVINGS
+async function loadReceivings() {
+
+    const receivingList =
+        document.getElementById("receivingList");
+
+    const { data, error } =
+        await supabaseClient.rpc(
+            "get_user_receivings",
+            {
+                p_mobile: mobile,
+                p_pin: pin
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        receivingList.innerHTML = `
+            <div class="message">
+                Receiving load नहीं हो पाया।
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if (!data || data.length === 0) {
+
+        receivingList.innerHTML = `
+            <div class="message">
+                अभी कोई Receiving उपलब्ध नहीं है।
+            </div>
+        `;
+
+        return;
+    }
+
+
+    receivingList.innerHTML = "";
+
+
+    data.forEach((receiving) => {
+
+        const box =
+            document.createElement("div");
+
+        box.className = "receiving-box";
+
+
+        box.innerHTML = `
+
+            <div class="receiving-name">
+                Receiving ${receiving.receiving_number}
+            </div>
+
+            <div class="buttons">
+
+                <button
+                    class="btn view-btn"
+                    onclick="viewReceiving('${receiving.file_path}')">
+                    VIEW
+                </button>
+
+                <button
+                    class="btn download-btn"
+                    onclick="downloadReceiving('${receiving.file_path}', '${receiving.document_name}')">
+                    DOWNLOAD
+                </button>
+
+            </div>
+
+        `;
+
+
+        receivingList.appendChild(box);
+
+    });
+
+}
+
+
+// VIEW
+async function viewReceiving(filePath) {
+
+    alert("PDF VIEW सिस्टम अगले step में जोड़ा जाएगा।");
+
+}
+
+
+// DOWNLOAD
+async function downloadReceiving(filePath, fileName) {
+
+    alert("PDF DOWNLOAD सिस्टम अगले step में जोड़ा जाएगा।");
+
+}
+
+
+loadReceivings();
+
+</script>
+
+</body>
+</html>
