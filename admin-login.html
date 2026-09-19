@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SN Internet Zone - Admin Login</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#ff9933,#ffffff,#138808);
+}
+
+.login-box{
+    width:90%;
+    max-width:380px;
+    background:#ffffff;
+    padding:30px 25px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.20);
+    text-align:center;
+}
+
+.logo{
+    width:85px;
+    height:85px;
+    margin:0 auto 15px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    font-weight:bold;
+    color:#ffffff;
+    background:#0d47a1;
+    border:5px solid #ffffff;
+    box-shadow:
+        0 0 0 4px #ff9933,
+        0 0 0 8px #138808;
+}
+
+h1{
+    margin:5px 0;
+    color:#0d47a1;
+    font-size:25px;
+}
+
+.subtitle{
+    margin-bottom:25px;
+    color:#555;
+    font-size:14px;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:9px;
+    font-size:16px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#0d47a1;
+}
+
+button{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:9px;
+    background:#0d47a1;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#083579;
+}
+
+#message{
+    margin-top:15px;
+    font-size:14px;
+    min-height:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="logo">SN</div>
+
+    <h1>SN INTERNET ZONE</h1>
+
+    <div class="subtitle">
+        Admin Login
+    </div>
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Admin Email"
+        autocomplete="email"
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Admin Password"
+        autocomplete="current-password"
+    >
+
+    <button id="loginBtn">
+        LOGIN
+    </button>
+
+    <div id="message"></div>
+
+</div>
+
+<script>
+document.getElementById("loginBtn").addEventListener("click", function(){
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const message = document.getElementById("message");
+
+    if(!email || !password){
+        message.style.color = "red";
+        message.textContent = "Please enter email and password.";
+        return;
+    }
+
+    message.style.color = "#0d47a1";
+    message.textContent = "Login system connecting...";
+
+});
+</script>
+
+</body>
+</html>
