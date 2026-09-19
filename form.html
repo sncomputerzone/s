@@ -194,7 +194,7 @@ async function getSecureFileUrl(filePath) {
         data,
         error
     } = await supabaseClient.functions.invoke(
-        "receiving-file",
+        "hyper-action",
         {
             body: {
                 mobile: mobile,
@@ -206,6 +206,7 @@ async function getSecureFileUrl(filePath) {
 
 
     console.log("Function data:", data);
+
     console.log("Function error:", error);
 
 
@@ -564,8 +565,10 @@ function escapeHtml(text) {
             "div"
         );
 
+
     div.textContent =
         text;
+
 
     return div.innerHTML;
 
