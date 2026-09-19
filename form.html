@@ -122,9 +122,16 @@
 
 </head>
 
+
 <body>
 
+
 <div class="container">
+
+
+    <!-- ================================
+         AVAILABLE BALANCE
+    ================================= -->
 
     <div class="balance-box">
 
@@ -132,17 +139,28 @@
             Available Balance
         </div>
 
-        <div class="balance">
+        <div
+            class="balance"
+            id="userBalance"
+        >
             ₹ 0
         </div>
 
     </div>
 
 
+    <!-- ================================
+         RECEIVING TITLE
+    ================================= -->
+
     <div class="receiving-title">
         My Receivings
     </div>
 
+
+    <!-- ================================
+         RECEIVING LIST
+    ================================= -->
 
     <div id="receivingList">
 
@@ -152,16 +170,24 @@
 
     </div>
 
+
 </div>
 
 
 <script>
 
+
+/* ================================
+   SUPABASE
+================================ */
+
 const SUPABASE_URL =
     "https://ikotfwggtwbmnepgvchu.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
 
 const supabaseClient =
     supabase.createClient(
@@ -170,12 +196,21 @@ const supabaseClient =
     );
 
 
+/* ================================
+   LOGIN DATA
+================================ */
+
 const mobile =
     sessionStorage.getItem("sn_mobile");
+
 
 const pin =
     sessionStorage.getItem("sn_pin");
 
+
+/* ================================
+   CHECK LOGIN
+================================ */
 
 if (!mobile || !pin) {
 
@@ -185,29 +220,112 @@ if (!mobile || !pin) {
 
 
 /* ================================
+   LOAD USER BALANCE
+================================ */
+
+async function loadUserBalance() {
+
+    const balanceElement =
+        document.getElementById(
+            "userBalance"
+        );
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                "get_user_balance",
+                {
+                    p_mobile: mobile,
+                    p_pin: pin
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Balance Load Error:",
+                error
+            );
+
+
+            balanceElement.textContent =
+                "₹ 0";
+
+
+            return;
+
+        }
+
+
+        balanceElement.textContent =
+            "₹ " +
+            Number(
+                data || 0
+            ).toLocaleString(
+                "en-IN",
+                {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "Balance Error:",
+            error
+        );
+
+
+        balanceElement.textContent =
+            "₹ 0";
+
+    }
+
+}
+
+
+/* ================================
    SECURE PDF URL
 ================================ */
 
-async function getSecureFileUrl(filePath) {
+async function getSecureFileUrl(
+    filePath
+) {
 
     const {
         data,
         error
-    } = await supabaseClient.functions.invoke(
-        "hyper-action",
-        {
-            body: {
-                mobile: mobile,
-                pin: pin,
-                file_path: filePath
+    } =
+        await supabaseClient.functions.invoke(
+            "hyper-action",
+            {
+                body: {
+                    mobile: mobile,
+                    pin: pin,
+                    file_path: filePath
+                }
             }
-        }
+        );
+
+
+    console.log(
+        "Function data:",
+        data
     );
 
 
-    console.log("Function data:", data);
-
-    console.log("Function error:", error);
+    console.log(
+        "Function error:",
+        error
+    );
 
 
     if (error) {
@@ -265,7 +383,8 @@ async function viewReceiving(
 
         button.disabled = true;
 
-        button.textContent = "OPENING...";
+        button.textContent =
+            "OPENING...";
 
 
         const secureUrl =
@@ -299,7 +418,8 @@ async function viewReceiving(
 
         button.disabled = false;
 
-        button.textContent = "VIEW";
+        button.textContent =
+            "VIEW";
 
     }
 
@@ -320,7 +440,8 @@ async function downloadReceiving(
 
         button.disabled = true;
 
-        button.textContent = "DOWNLOADING...";
+        button.textContent =
+            "DOWNLOADING...";
 
 
         const secureUrl =
@@ -338,8 +459,7 @@ async function downloadReceiving(
         if (!response.ok) {
 
             throw new Error(
-                "PDF download नहीं हो पाया। HTTP Status: " +
-                response.status
+                "PDF file download नहीं हो पाई।"
             );
 
         }
@@ -356,7 +476,9 @@ async function downloadReceiving(
 
 
         const link =
-            document.createElement("a");
+            document.createElement(
+                "a"
+            );
 
 
         link.href =
@@ -410,7 +532,8 @@ async function downloadReceiving(
 
         button.disabled = false;
 
-        button.textContent = "DOWNLOAD";
+        button.textContent =
+            "DOWNLOAD";
 
     }
 
@@ -460,12 +583,16 @@ async function loadReceivings() {
 
         `;
 
+
         return;
 
     }
 
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         receivingList.innerHTML = `
 
@@ -477,16 +604,19 @@ async function loadReceivings() {
 
         `;
 
+
         return;
 
     }
 
 
-    receivingList.innerHTML = "";
+    receivingList.innerHTML =
+        "";
 
 
     data.forEach(
         (receiving) => {
+
 
             const box =
                 document.createElement(
@@ -502,7 +632,8 @@ async function loadReceivings() {
 
                 <div class="receiving-name">
 
-                    Receiving ${receiving.receiving_number}
+                    Receiving
+                    ${receiving.receiving_number}
 
                 </div>
 
@@ -520,7 +651,8 @@ async function loadReceivings() {
                 <div class="buttons">
 
                     <button
-                        class="btn view-btn">
+                        class="btn view-btn"
+                    >
 
                         VIEW
 
@@ -528,7 +660,8 @@ async function loadReceivings() {
 
 
                     <button
-                        class="btn download-btn">
+                        class="btn download-btn"
+                    >
 
                         DOWNLOAD
 
@@ -582,6 +715,7 @@ async function loadReceivings() {
                 box
             );
 
+
         }
     );
 
@@ -592,7 +726,9 @@ async function loadReceivings() {
    SAFE TEXT
 ================================ */
 
-function escapeHtml(text) {
+function escapeHtml(
+    text
+) {
 
     const div =
         document.createElement(
@@ -615,7 +751,11 @@ function escapeHtml(text) {
 
 loadReceivings();
 
+loadUserBalance();
+
+
 </script>
+
 
 </body>
 
