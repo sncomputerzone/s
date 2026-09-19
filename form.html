@@ -100,6 +100,11 @@
             text-align: center;
             color: #555;
         }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -110,8 +115,11 @@
     <!-- AVAILABLE BALANCE -->
     <div class="balance-box">
         <div class="balance-title">Available Balance</div>
+
+        <!-- Balance system will be added later -->
         <div class="balance">₹ 0</div>
     </div>
+
 
     <!-- RECEIVINGS -->
     <div class="receiving-title">
@@ -126,25 +134,34 @@
 
 </div>
 
+
 <script>
 
-const SUPABASE_URL = "https://ikotfwggtwbmnepgvchu.supabase.co";
+const SUPABASE_URL =
+    "https://ikotfwggtwbmnepgvchu.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+    "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
 
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-// GET LOGIN DETAILS
-const mobile = sessionStorage.getItem("sn_mobile");
-const pin = sessionStorage.getItem("sn_pin");
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-// IF LOGIN DETAILS ARE MISSING
+// ==============================
+// LOGIN DETAILS
+// ==============================
+
+const mobile =
+    sessionStorage.getItem("sn_mobile");
+
+const pin =
+    sessionStorage.getItem("sn_pin");
+
+
+// If login details are missing
 if (!mobile || !pin) {
 
     window.location.href = "index.html";
@@ -152,20 +169,174 @@ if (!mobile || !pin) {
 }
 
 
+// ==============================
+// EDGE FUNCTION URL
+// ==============================
+
+const FUNCTION_URL =
+    SUPABASE_URL +
+    "/functions/v1/receiving-file";
+
+
+// ==============================
+// GET SECURE PDF URL
+// ==============================
+
+async function getSecureFileUrl(filePath) {
+
+    const response = await fetch(
+        FUNCTION_URL,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY
+            },
+
+            body: JSON.stringify({
+                mobile: mobile,
+                pin: pin,
+                file_path: filePath
+            })
+        }
+    );
+
+
+    const result = await response.json();
+
+
+    if (!response.ok) {
+
+        console.error(result);
+
+        throw new Error(
+            result.error ||
+            "Unable to access file"
+        );
+    }
+
+
+    return result.url;
+}
+
+
+// ==============================
+// VIEW RECEIVING
+// ==============================
+
+async function viewReceiving(
+    filePath,
+    button
+) {
+
+    try {
+
+        button.disabled = true;
+        button.textContent = "OPENING...";
+
+
+        const secureUrl =
+            await getSecureFileUrl(filePath);
+
+
+        window.open(
+            secureUrl,
+            "_blank"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "PDF open नहीं हो पाया। कृपया फिर से कोशिश करें।"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "VIEW";
+
+    }
+}
+
+
+// ==============================
+// DOWNLOAD RECEIVING
+// ==============================
+
+async function downloadReceiving(
+    filePath,
+    fileName,
+    button
+) {
+
+    try {
+
+        button.disabled = true;
+        button.textContent = "DOWNLOADING...";
+
+
+        const secureUrl =
+            await getSecureFileUrl(filePath);
+
+
+        const link =
+            document.createElement("a");
+
+        link.href = secureUrl;
+
+        link.download =
+            fileName || "receiving.pdf";
+
+        link.target = "_blank";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "PDF download नहीं हो पाया। कृपया फिर से कोशिश करें।"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "DOWNLOAD";
+
+    }
+}
+
+
+// ==============================
 // LOAD RECEIVINGS
+// ==============================
+
 async function loadReceivings() {
 
     const receivingList =
-        document.getElementById("receivingList");
-
-    const { data, error } =
-        await supabaseClient.rpc(
-            "get_user_receivings",
-            {
-                p_mobile: mobile,
-                p_pin: pin
-            }
+        document.getElementById(
+            "receivingList"
         );
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "get_user_receivings",
+        {
+            p_mobile: mobile,
+            p_pin: pin
+        }
+    );
 
 
     if (error) {
@@ -202,7 +373,8 @@ async function loadReceivings() {
         const box =
             document.createElement("div");
 
-        box.className = "receiving-box";
+        box.className =
+            "receiving-box";
 
 
         box.innerHTML = `
@@ -214,20 +386,56 @@ async function loadReceivings() {
             <div class="buttons">
 
                 <button
-                    class="btn view-btn"
-                    onclick="viewReceiving('${receiving.file_path}')">
+                    class="btn view-btn">
                     VIEW
                 </button>
 
                 <button
-                    class="btn download-btn"
-                    onclick="downloadReceiving('${receiving.file_path}', '${receiving.document_name}')">
+                    class="btn download-btn">
                     DOWNLOAD
                 </button>
 
             </div>
 
         `;
+
+
+        const viewButton =
+            box.querySelector(
+                ".view-btn"
+            );
+
+        const downloadButton =
+            box.querySelector(
+                ".download-btn"
+            );
+
+
+        viewButton.addEventListener(
+            "click",
+            function () {
+
+                viewReceiving(
+                    receiving.file_path,
+                    viewButton
+                );
+
+            }
+        );
+
+
+        downloadButton.addEventListener(
+            "click",
+            function () {
+
+                downloadReceiving(
+                    receiving.file_path,
+                    receiving.document_name,
+                    downloadButton
+                );
+
+            }
+        );
 
 
         receivingList.appendChild(box);
@@ -237,21 +445,9 @@ async function loadReceivings() {
 }
 
 
-// VIEW
-async function viewReceiving(filePath) {
-
-    alert("PDF VIEW सिस्टम अगले step में जोड़ा जाएगा।");
-
-}
-
-
-// DOWNLOAD
-async function downloadReceiving(filePath, fileName) {
-
-    alert("PDF DOWNLOAD सिस्टम अगले step में जोड़ा जाएगा।");
-
-}
-
+// ==============================
+// START
+// ==============================
 
 loadReceivings();
 
