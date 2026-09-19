@@ -6,6 +6,8 @@
 
 <title>SN INTERNET ZONE</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 /* =========================
@@ -752,7 +754,7 @@ document.getElementById("pin").addEventListener("input", function () {
    OPEN NEXT PAGE
 ========================= */
 
-function openNextPage() {
+async function openNextPage() {
 
     const mobile = document.getElementById("mobile").value;
     const pin = document.getElementById("pin").value;
@@ -774,9 +776,69 @@ function openNextPage() {
     }
 
 
-    /* Next page */
+    // Supabase connection
 
-    window.location.href = "home.html";
+    const SUPABASE_URL =
+        "https://ikotfwggtwbmnepgvchu.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    // Verify Mobile + PIN
+
+    const { data, error } =
+        await supabaseClient.rpc(
+            "verify_user_login",
+            {
+                p_mobile: mobile,
+                p_pin: pin
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert("Login verification failed. Please try again.");
+
+        return;
+    }
+
+
+    // Wrong Mobile + PIN
+
+    if (!data || data.length === 0) {
+
+        alert("Invalid mobile number or PIN.");
+
+        return;
+    }
+
+
+    // Save login details for form.html
+
+    sessionStorage.setItem(
+        "sn_mobile",
+        mobile
+    );
+
+    sessionStorage.setItem(
+        "sn_pin",
+        pin
+    );
+
+
+    // Open Form page
+
+    window.location.href = "form.html";
 
 }
 
