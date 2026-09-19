@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SN Internet Zone - Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f2f5f9;
+    color:#222;
+}
+
+.header{
+    background:#0d47a1;
+    color:white;
+    padding:18px;
+    text-align:center;
+    position:relative;
+}
+
+.header h1{
+    margin:0;
+    font-size:24px;
+}
+
+.header p{
+    margin:6px 0 0;
+    font-size:13px;
+}
+
+.logout-btn{
+    position:absolute;
+    right:15px;
+    top:18px;
+    background:#d32f2f;
+    color:white;
+    border:0;
+    border-radius:7px;
+    padding:9px 13px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.container{
+    width:94%;
+    max-width:900px;
+    margin:20px auto;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    margin-bottom:20px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.box h2{
+    margin-top:0;
+    color:#0d47a1;
+    font-size:20px;
+}
+
+.search-row{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#0d47a1;
+}
+
+button{
+    border:0;
+    border-radius:8px;
+    padding:11px 16px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.search-btn{
+    background:#0d47a1;
+    color:white;
+    white-space:nowrap;
+}
+
+.user-card{
+    margin-top:18px;
+    padding:16px;
+    background:#f7f9fc;
+    border-radius:10px;
+    border-left:5px solid #0d47a1;
+}
+
+.user-info{
+    line-height:1.8;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.pin{
+    font-size:22px;
+    font-weight:bold;
+    color:#d84315;
+    letter-spacing:3px;
+}
+
+.delete-user{
+    background:#d32f2f;
+    color:white;
+    margin-top:12px;
+}
+
+.receiving{
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:14px;
+    margin-top:12px;
+    background:white;
+}
+
+.receiving-title{
+    font-weight:bold;
+    color:#0d47a1;
+    font-size:17px;
+}
+
+.receiving-name{
+    margin:7px 0;
+    word-break:break-word;
+}
+
+.receiving-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.view-btn{
+    background:#138808;
+    color:white;
+}
+
+.delete-btn{
+    background:#d32f2f;
+    color:white;
+}
+
+.upload-box{
+    margin-top:18px;
+    padding:15px;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.upload-box h3{
+    margin-top:0;
+    color:#0d47a1;
+}
+
+.upload-btn{
+    background:#0d47a1;
+    color:white;
+    width:100%;
+    margin-top:12px;
+}
+
+.status{
+    margin-top:12px;
+    min-height:20px;
+    font-size:14px;
+}
+
+.no-data{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+    color:#0d47a1;
+}
+
+@media(max-width:600px){
+
+    .header{
+        padding:15px 95px 15px 15px;
+    }
+
+    .header h1{
+        font-size:19px;
+    }
+
+    .logout-btn{
+        right:10px;
+        top:15px;
+        padding:8px 10px;
+        font-size:12px;
+    }
+
+    .search-row{
+        flex-direction:column;
+    }
+
+    .search-btn{
+        width:100%;
+    }
+
+    .container{
+        width:94%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <h1>SN INTERNET ZONE</h1>
+    <p>Admin Dashboard</p>
+
+    <button class="logout-btn" id="logoutBtn">
+        LOGOUT
+    </button>
+
+</header>
+
+
+<div class="container">
+
+    <!-- SEARCH -->
+    <div class="box">
+
+        <h2>🔎 Search User</h2>
+
+        <div class="search-row">
+
+            <input
+                type="tel"
+                id="searchMobile"
+                maxlength="10"
+                inputmode="numeric"
+                placeholder="Enter 10-digit mobile number"
+            >
+
+            <button
+                class="search-btn"
+                id="searchBtn"
+            >
+                SEARCH
+            </button>
+
+        </div>
+
+        <div id="searchStatus" class="status"></div>
+
+        <div id="userResult"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+    "https://ikotfwggtwbmnepgvchu.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const searchMobile =
+    document.getElementById("searchMobile");
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+const searchStatus =
+    document.getElementById("searchStatus");
+
+const userResult =
+    document.getElementById("userResult");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+
+/* =========================================
+   MOBILE INPUT
+========================================= */
+
+searchMobile.addEventListener("input", function(){
+
+    this.value =
+        this.value.replace(/\D/g,"").slice(0,10);
+
+});
+
+
+/* =========================================
+   CHECK ADMIN
+========================================= */
+
+async function checkAdmin(){
+
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
+
+
+    if(!session){
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    const { data, error } =
+        await supabaseClient.rpc("is_admin");
+
+
+    if(error || data !== true){
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+logoutBtn.addEventListener("click", async function(){
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "admin-login.html";
+
+});
+
+
+/* =========================================
+   SEARCH USER
+========================================= */
+
+searchBtn.addEventListener("click", searchUser);
+
+
+searchMobile.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter"){
+        searchUser();
+    }
+
+});
+
+
+async function searchUser(){
+
+    const mobile =
+        searchMobile.value.trim();
+
+
+    userResult.innerHTML = "";
+    searchStatus.textContent = "";
+
+
+    if(!/^\d{10}$/.test(mobile)){
+
+        searchStatus.style.color = "red";
+
+        searchStatus.textContent =
+            "Please enter a valid 10-digit mobile number.";
+
+        return;
+    }
+
+
+    searchStatus.style.color = "#0d47a1";
+
+    searchStatus.textContent =
+        "Searching...";
+
+
+    const { data, error } =
+        await supabaseClient
+        .from("users")
+        .select("id,name,mobile_number,pin,created_at")
+        .eq("mobile_number", mobile)
+        .maybeSingle();
+
+
+    if(error){
+
+        console.error(error);
+
+        searchStatus.style.color = "red";
+
+        searchStatus.textContent =
+            error.message;
+
+        return;
+    }
+
+
+    if(!data){
+
+        searchStatus.style.color = "#777";
+
+        searchStatus.textContent =
+            "No user found.";
+
+        userResult.innerHTML = `
+            <div class="no-data">
+                No user found for this mobile number.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    searchStatus.textContent = "";
+
+    showUser(data);
+
+}
+
+
+/* =========================================
+   SHOW USER
+========================================= */
+
+async function showUser(user){
+
+    userResult.innerHTML = `
+        <div class="user-card">
+
+            <div class="user-info">
+
+                <div>
+                    <span class="label">Name:</span>
+                    ${escapeHtml(user.name)}
+                </div>
+
+                <div>
+                    <span class="label">Mobile:</span>
+                    ${escapeHtml(user.mobile_number)}
+                </div>
+
+                <div>
+                    <span class="label">PIN:</span>
+                    <span class="pin">
+                        ${escapeHtml(user.pin)}
+                    </span>
+                </div>
+
+            </div>
+
+            <button
+                class="delete-user"
+                onclick="deleteUser('${user.id}')"
+            >
+                🗑️ DELETE USER / PIN
+            </button>
+
+
+            <div class="upload-box">
+
+                <h3>📤 Upload New Receiving</h3>
+
+                <input
+                    type="text"
+                    id="documentName"
+                    placeholder="Document name"
+                >
+
+                <br><br>
+
+                <input
+                    type="file"
+                    id="documentFile"
+                    accept=".pdf,application/pdf"
+                >
+
+                <button
+                    class="upload-btn"
+                    onclick="uploadReceiving('${user.id}','${user.mobile_number}')"
+                >
+                    UPLOAD PDF
+                </button>
+
+                <div
+                    id="uploadStatus"
+                    class="status"
+                ></div>
+
+            </div>
+
+
+            <div style="margin-top:20px;">
+
+                <h3 style="color:#0d47a1;">
+                    📁 Receivings
+                </h3>
+
+                <div id="receivingsList">
+                    <div class="loading">
+                        Loading receivings...
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+    await loadReceivings(user.id);
+
+}
+
+
+/* =========================================
+   LOAD RECEIVINGS
+========================================= */
+
+async function loadReceivings(userId){
+
+    const list =
+        document.getElementById("receivingsList");
+
+
+    const { data, error } =
+        await supabaseClient
+        .from("receivings")
+        .select(`
+            id,
+            receiving_number,
+            document_name,
+            file_path,
+            created_at
+        `)
+        .eq("user_id", userId)
+        .order("receiving_number", {
+            ascending:true
+        });
+
+
+    if(error){
+
+        console.error(error);
+
+        list.innerHTML = `
+            <div style="color:red;">
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if(!data || data.length === 0){
+
+        list.innerHTML = `
+            <div class="no-data">
+                No receiving found.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML = "";
+
+
+    data.forEach(function(item){
+
+        const div =
+            document.createElement("div");
+
+        div.className = "receiving";
+
+
+        div.innerHTML = `
+
+            <div class="receiving-title">
+                Receiving ${item.receiving_number}
+            </div>
+
+            <div class="receiving-name">
+                ${escapeHtml(item.document_name)}
+            </div>
+
+            <div style="font-size:12px;color:#777;">
+                ${new Date(item.created_at).toLocaleString()}
+            </div>
+
+            <div class="receiving-actions">
+
+                <button
+                    class="view-btn"
+                    onclick="viewDocument('${item.file_path}')"
+                >
+                    👁️ VIEW PDF
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteReceiving('${item.id}','${item.file_path}')"
+                >
+                    🗑️ DELETE
+                </button>
+
+            </div>
+        `;
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================================
+   UPLOAD RECEIVING
+========================================= */
+
+async function uploadReceiving(userId,mobile){
+
+    const fileInput =
+        document.getElementById("documentFile");
+
+    const nameInput =
+        document.getElementById("documentName");
+
+    const status =
+        document.getElementById("uploadStatus");
+
+
+    const file =
+        fileInput.files[0];
+
+
+    let documentName =
+        nameInput.value.trim();
+
+
+    if(!file){
+
+        status.style.color = "red";
+
+        status.textContent =
+            "Please select a PDF file.";
+
+        return;
+    }
+
+
+    if(file.type !== "application/pdf"){
+
+        status.style.color = "red";
+
+        status.textContent =
+            "Only PDF files are allowed.";
+
+        return;
+    }
+
+
+    if(!documentName){
+
+        documentName =
+            file.name;
+    }
+
+
+    status.style.color = "#0d47a1";
+
+    status.textContent =
+        "Preparing upload...";
+
+
+    try{
+
+        /* Get current receiving number */
+
+        const { data: existing, error: existingError } =
+            await supabaseClient
+            .from("receivings")
+            .select("receiving_number")
+            .eq("user_id",userId)
+            .order("receiving_number",{
+                ascending:false
+            })
+            .limit(1);
+
+
+        if(existingError){
+
+            throw existingError;
+        }
+
+
+        const nextNumber =
+            existing && existing.length > 0
+            ? Number(existing[0].receiving_number) + 1
+            : 1;
+
+
+        /* Unique file path */
+
+        const safeName =
+            file.name
+            .replace(/[^a-zA-Z0-9._-]/g,"_");
+
+
+        const filePath =
+            mobile +
+            "/receiving-" +
+            nextNumber +
+            "-" +
+            Date.now() +
+            "-" +
+            safeName;
+
+
+        status.textContent =
+            "Uploading PDF...";
+
+
+        const { error: uploadError } =
+            await supabaseClient
+            .storage
+            .from("receiving-documents")
+            .upload(
+                filePath,
+                file,
+                {
+                    contentType:"application/pdf",
+                    upsert:false
+                }
+            );
+
+
+        if(uploadError){
+
+            throw uploadError;
+        }
+
+
+        status.textContent =
+            "Saving receiving record...";
+
+
+        const { error: insertError } =
+            await supabaseClient
+            .from("receivings")
+            .insert({
+                user_id:userId,
+                mobile_number:mobile,
+                receiving_number:nextNumber,
+                document_name:documentName,
+                file_path:filePath
+            });
+
+
+        if(insertError){
+
+            /* Delete uploaded file if database insert fails */
+
+            await supabaseClient
+            .storage
+            .from("receiving-documents")
+            .remove([filePath]);
+
+            throw insertError;
+        }
+
+
+        status.style.color = "green";
+
+        status.textContent =
+            "Receiving " +
+            nextNumber +
+            " uploaded successfully.";
+
+
+        fileInput.value = "";
+        nameInput.value = "";
+
+
+        await loadReceivings(userId);
+
+
+    }catch(error){
+
+        console.error(error);
+
+        status.style.color = "red";
+
+        status.textContent =
+            error.message ||
+            "Upload failed.";
+    }
+
+}
+
+
+/* =========================================
+   VIEW PDF
+========================================= */
+
+async function viewDocument(filePath){
+
+    try{
+
+        const { data, error } =
+            await supabaseClient
+            .storage
+            .from("receiving-documents")
+            .createSignedUrl(
+                filePath,
+                3600
+            );
+
+
+        if(error){
+
+            alert(error.message);
+            return;
+        }
+
+
+        window.open(
+            data.signedUrl,
+            "_blank"
+        );
+
+
+    }catch(error){
+
+        alert(
+            error.message ||
+            "Unable to open PDF."
+        );
+    }
+
+}
+
+
+/* =========================================
+   DELETE RECEIVING
+========================================= */
+
+async function deleteReceiving(
+    receivingId,
+    filePath
+){
+
+    if(!confirm(
+        "Delete this receiving permanently?"
+    )){
+        return;
+    }
+
+
+    try{
+
+        const { error: storageError } =
+            await supabaseClient
+            .storage
+            .from("receiving-documents")
+            .remove([filePath]);
+
+
+        if(storageError){
+
+            throw storageError;
+        }
+
+
+        const { error: deleteError } =
+            await supabaseClient
+            .from("receivings")
+            .delete()
+            .eq("id",receivingId);
+
+
+        if(deleteError){
+
+            throw deleteError;
+        }
+
+
+        alert(
+            "Receiving deleted successfully."
+        );
+
+
+        await searchUser();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "Delete failed."
+        );
+    }
+
+}
+
+
+/* =========================================
+   DELETE USER
+========================================= */
+
+async function deleteUser(userId){
+
+    if(!confirm(
+        "Delete this user, PIN and ALL receivings permanently?"
+    )){
+        return;
+    }
+
+
+    try{
+
+        /* Find all receiving files */
+
+        const { data: files, error: filesError } =
+            await supabaseClient
+            .from("receivings")
+            .select("file_path")
+            .eq("user_id",userId);
+
+
+        if(filesError){
+
+            throw filesError;
+        }
+
+
+        /* Delete storage files */
+
+        if(files && files.length > 0){
+
+            const paths =
+                files.map(
+                    item => item.file_path
+                );
+
+
+            const { error: storageError } =
+                await supabaseClient
+                .storage
+                .from("receiving-documents")
+                .remove(paths);
+
+
+            if(storageError){
+
+                throw storageError;
+            }
+        }
+
+
+        /* Delete user */
+
+        const { error: userError } =
+            await supabaseClient
+            .from("users")
+            .delete()
+            .eq("id",userId);
+
+
+        if(userError){
+
+            throw userError;
+        }
+
+
+        alert(
+            "User, PIN and receivings deleted successfully."
+        );
+
+
+        searchMobile.value = "";
+        userResult.innerHTML = "";
+        searchStatus.textContent = "";
+
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "User deletion failed."
+        );
+    }
+
+}
+
+
+/* =========================================
+   HTML SAFETY
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+(async function(){
+
+    await checkAdmin();
+
+})();
+
+</script>
+
+</body>
+</html>
