@@ -52,109 +52,8 @@ body{
 
 
 /* =========================
-   BACKGROUND LIGHTNING
-   केवल BACKGROUND में
-========================= */
-
-body::before{
-    content:"";
-    position:fixed;
-
-    width:450px;
-    height:450px;
-
-    left:-200px;
-    top:-100px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.85) 0%,
-            rgba(255,255,255,.35) 30%,
-            transparent 70%
-        );
-
-    filter:blur(20px);
-
-    animation:
-        backgroundLight 8s ease-in-out infinite;
-
-    pointer-events:none;
-    z-index:-1;
-}
-
-body::after{
-    content:"";
-    position:fixed;
-
-    width:500px;
-    height:500px;
-
-    right:-250px;
-    bottom:-150px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.7) 0%,
-            rgba(255,255,255,.25) 35%,
-            transparent 70%
-        );
-
-    filter:blur(25px);
-
-    animation:
-        backgroundLight2 10s ease-in-out infinite;
-
-    pointer-events:none;
-    z-index:-1;
-}
-
-@keyframes backgroundLight{
-
-    0%{
-        transform:translate(0,0) scale(1);
-        opacity:.5;
-    }
-
-    50%{
-        transform:translate(600px,300px) scale(1.5);
-        opacity:.9;
-    }
-
-    100%{
-        transform:translate(0,0) scale(1);
-        opacity:.5;
-    }
-
-}
-
-@keyframes backgroundLight2{
-
-    0%{
-        transform:translate(0,0) scale(1);
-        opacity:.4;
-    }
-
-    50%{
-        transform:translate(-500px,-250px) scale(1.4);
-        opacity:.8;
-    }
-
-    100%{
-        transform:translate(0,0) scale(1);
-        opacity:.4;
-    }
-
-}
-
-
-/* =========================
    MAIN CONTAINER
+   PAGE LIGHTNING REMOVED
 ========================= */
 
 .container{
@@ -264,21 +163,16 @@ body::after{
 
 
 /*
-==================================================
-अपना LOGO लगाने के लिए
-
-नीचे की:
+अपना LOGO लगाने के लिए:
 
 <div class="logo-placeholder">SN</div>
 
-को हटाकर यह लगाएँ:
+को हटाकर:
 
 <img
     src="images/logo.png"
     alt="SN Internet Zone Logo"
 >
-
-==================================================
 */
 
 .logo-box img{
@@ -1262,7 +1156,6 @@ setInterval(() => {
 
 /* =========================
    OPEN BUTTON
-   आगे PAGE खोलने के लिए
 ========================= */
 
 function openPage(){
@@ -1276,8 +1169,6 @@ function openPage(){
         .value;
 
 
-    /* Mobile validation */
-
     if(mobile.length !== 10){
 
         alert(
@@ -1289,8 +1180,6 @@ function openPage(){
     }
 
 
-    /* PIN validation */
-
     if(pin.length !== 4){
 
         alert(
@@ -1301,20 +1190,6 @@ function openPage(){
 
     }
 
-
-    /*
-    ==========================================
-    अभी केवल testing के लिए:
-
-    यहाँ आगे का page लगाया जाएगा।
-
-    उदाहरण:
-
-    window.location.href =
-        "home.html";
-
-    ==========================================
-    */
 
     window.location.href =
         "home.html";
