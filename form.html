@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>My Receivings - SN INTERNET ZONE</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -65,7 +70,15 @@
         .receiving-name {
             font-size: 18px;
             font-weight: bold;
+            margin-bottom: 6px;
+            color: #222;
+        }
+
+        .document-name {
+            font-size: 15px;
+            color: #666;
             margin-bottom: 15px;
+            word-break: break-word;
         }
 
         .buttons {
@@ -105,31 +118,39 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+
     </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <!-- AVAILABLE BALANCE -->
     <div class="balance-box">
-        <div class="balance-title">Available Balance</div>
 
-        <!-- Balance system will be added later -->
-        <div class="balance">₹ 0</div>
+        <div class="balance-title">
+            Available Balance
+        </div>
+
+        <div class="balance">
+            ₹ 0
+        </div>
+
     </div>
 
 
-    <!-- RECEIVINGS -->
     <div class="receiving-title">
         My Receivings
     </div>
 
+
     <div id="receivingList">
+
         <div class="message">
             Loading...
         </div>
+
     </div>
 
 </div>
@@ -140,8 +161,10 @@
 const SUPABASE_URL =
     "https://ikotfwggtwbmnepgvchu.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_QtHH2tYYHFrlvELjhPWMaA_-DesTdzk";
+
 
 const supabaseClient =
     supabase.createClient(
@@ -150,18 +173,14 @@ const supabaseClient =
     );
 
 
-// ==============================
-// LOGIN DETAILS
-// ==============================
-
 const mobile =
     sessionStorage.getItem("sn_mobile");
+
 
 const pin =
     sessionStorage.getItem("sn_pin");
 
 
-// If login details are missing
 if (!mobile || !pin) {
 
     window.location.href = "index.html";
@@ -169,61 +188,117 @@ if (!mobile || !pin) {
 }
 
 
-// ==============================
-// EDGE FUNCTION URL
-// ==============================
-
 const FUNCTION_URL =
     SUPABASE_URL +
     "/functions/v1/receiving-file";
 
 
-// ==============================
-// GET SECURE PDF URL
-// ==============================
 
 async function getSecureFileUrl(filePath) {
 
-    const response = await fetch(
-        FUNCTION_URL,
-        {
-            method: "POST",
+    try {
 
-            headers: {
-                "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY
-            },
+        console.log("Sending request to:", FUNCTION_URL);
 
-            body: JSON.stringify({
-                mobile: mobile,
-                pin: pin,
-                file_path: filePath
-            })
-        }
-    );
+        console.log("File path:", filePath);
 
 
-    const result = await response.json();
+        const response =
+            await fetch(
+                FUNCTION_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": SUPABASE_KEY
+                    },
+
+                    body: JSON.stringify({
+
+                        mobile: mobile,
+
+                        pin: pin,
+
+                        file_path: filePath
+
+                    })
+                }
+            );
 
 
-    if (!response.ok) {
+        const responseText =
+            await response.text();
 
-        console.error(result);
 
-        throw new Error(
-            result.error ||
-            "Unable to access file"
+        console.log(
+            "Function response status:",
+            response.status
         );
+
+
+        console.log(
+            "Function response:",
+            responseText
+        );
+
+
+        let result = {};
+
+        try {
+
+            result =
+                JSON.parse(responseText);
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Server ने सही JSON response नहीं भेजा। HTTP Status: " +
+                response.status +
+                " | Response: " +
+                responseText
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Server Error. HTTP Status: " +
+                response.status
+            );
+
+        }
+
+
+        if (!result.url) {
+
+            throw new Error(
+                "Secure PDF URL नहीं मिला।"
+            );
+
+        }
+
+
+        return result.url;
+
+
+    } catch (error) {
+
+        console.error(
+            "getSecureFileUrl Error:",
+            error
+        );
+
+        throw error;
+
     }
 
-
-    return result.url;
 }
 
 
-// ==============================
-// VIEW RECEIVING
-// ==============================
 
 async function viewReceiving(
     filePath,
@@ -233,38 +308,64 @@ async function viewReceiving(
     try {
 
         button.disabled = true;
+
         button.textContent = "OPENING...";
 
 
         const secureUrl =
-            await getSecureFileUrl(filePath);
+            await getSecureFileUrl(
+                filePath
+            );
 
 
-        window.open(
-            secureUrl,
-            "_blank"
+        console.log(
+            "Secure URL:",
+            secureUrl
         );
+
+
+        const newWindow =
+            window.open(
+                secureUrl,
+                "_blank"
+            );
+
+
+        if (!newWindow) {
+
+            throw new Error(
+                "Browser ने नया tab/window block कर दिया। कृपया browser में pop-up allow करें।"
+            );
+
+        }
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "VIEW ERROR:",
+            error
+        );
+
 
         alert(
-            "PDF open नहीं हो पाया। कृपया फिर से कोशिश करें।"
+            "PDF open नहीं हो पाया।\n\n" +
+            "Error: " +
+            error.message
         );
+
 
     } finally {
 
         button.disabled = false;
+
         button.textContent = "VIEW";
 
     }
+
 }
 
 
-// ==============================
-// DOWNLOAD RECEIVING
-// ==============================
 
 async function downloadReceiving(
     filePath,
@@ -275,49 +376,76 @@ async function downloadReceiving(
     try {
 
         button.disabled = true;
+
         button.textContent = "DOWNLOADING...";
 
 
         const secureUrl =
-            await getSecureFileUrl(filePath);
+            await getSecureFileUrl(
+                filePath
+            );
+
+
+        console.log(
+            "Download URL:",
+            secureUrl
+        );
 
 
         const link =
             document.createElement("a");
 
-        link.href = secureUrl;
+
+        link.href =
+            secureUrl;
+
 
         link.download =
-            fileName || "receiving.pdf";
+            fileName ||
+            "receiving.pdf";
 
-        link.target = "_blank";
 
-        document.body.appendChild(link);
+        link.target =
+            "_blank";
+
+
+        document.body.appendChild(
+            link
+        );
+
 
         link.click();
 
+
         link.remove();
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "DOWNLOAD ERROR:",
+            error
+        );
+
 
         alert(
-            "PDF download नहीं हो पाया। कृपया फिर से कोशिश करें।"
+            "PDF download नहीं हो पाया।\n\n" +
+            "Error: " +
+            error.message
         );
+
 
     } finally {
 
         button.disabled = false;
+
         button.textContent = "DOWNLOAD";
 
     }
+
 }
 
 
-// ==============================
-// LOAD RECEIVINGS
-// ==============================
 
 async function loadReceivings() {
 
@@ -330,128 +458,183 @@ async function loadReceivings() {
     const {
         data,
         error
-    } = await supabaseClient.rpc(
-        "get_user_receivings",
-        {
-            p_mobile: mobile,
-            p_pin: pin
-        }
-    );
+    } =
+        await supabaseClient.rpc(
+            "get_user_receivings",
+            {
+                p_mobile: mobile,
+                p_pin: pin
+            }
+        );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Receiving Load Error:",
+            error
+        );
+
 
         receivingList.innerHTML = `
+
             <div class="message">
+
                 Receiving load नहीं हो पाया।
+
             </div>
+
         `;
 
         return;
+
     }
 
 
     if (!data || data.length === 0) {
 
         receivingList.innerHTML = `
+
             <div class="message">
+
                 अभी कोई Receiving उपलब्ध नहीं है।
+
             </div>
+
         `;
 
         return;
+
     }
 
 
     receivingList.innerHTML = "";
 
 
-    data.forEach((receiving) => {
+    data.forEach(
+        (receiving) => {
 
-        const box =
-            document.createElement("div");
-
-        box.className =
-            "receiving-box";
-
-
-        box.innerHTML = `
-
-            <div class="receiving-name">
-                Receiving ${receiving.receiving_number}
-            </div>
-
-            <div class="buttons">
-
-                <button
-                    class="btn view-btn">
-                    VIEW
-                </button>
-
-                <button
-                    class="btn download-btn">
-                    DOWNLOAD
-                </button>
-
-            </div>
-
-        `;
-
-
-        const viewButton =
-            box.querySelector(
-                ".view-btn"
-            );
-
-        const downloadButton =
-            box.querySelector(
-                ".download-btn"
-            );
-
-
-        viewButton.addEventListener(
-            "click",
-            function () {
-
-                viewReceiving(
-                    receiving.file_path,
-                    viewButton
+            const box =
+                document.createElement(
+                    "div"
                 );
 
-            }
-        );
+
+            box.className =
+                "receiving-box";
 
 
-        downloadButton.addEventListener(
-            "click",
-            function () {
+            box.innerHTML = `
 
-                downloadReceiving(
-                    receiving.file_path,
-                    receiving.document_name,
-                    downloadButton
+                <div class="receiving-name">
+
+                    Receiving ${receiving.receiving_number}
+
+                </div>
+
+
+                <div class="document-name">
+
+                    ${escapeHtml(
+                        receiving.document_name ||
+                        "Document"
+                    )}
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="btn view-btn">
+
+                        VIEW
+
+                    </button>
+
+
+                    <button
+                        class="btn download-btn">
+
+                        DOWNLOAD
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const viewButton =
+                box.querySelector(
+                    ".view-btn"
                 );
 
-            }
-        );
+
+            const downloadButton =
+                box.querySelector(
+                    ".download-btn"
+                );
 
 
-        receivingList.appendChild(box);
+            viewButton.addEventListener(
+                "click",
+                function () {
 
-    });
+                    viewReceiving(
+                        receiving.file_path,
+                        viewButton
+                    );
+
+                }
+            );
+
+
+            downloadButton.addEventListener(
+                "click",
+                function () {
+
+                    downloadReceiving(
+                        receiving.file_path,
+                        receiving.document_name,
+                        downloadButton
+                    );
+
+                }
+            );
+
+
+            receivingList.appendChild(
+                box
+            );
+
+        }
+    );
 
 }
 
 
-// ==============================
-// START
-// ==============================
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+
 
 loadReceivings();
 
 </script>
 
 </body>
+
 </html>
