@@ -329,21 +329,43 @@ async function downloadReceiving(
             );
 
 
+        const response =
+            await fetch(
+                secureUrl
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "PDF download नहीं हो पाया। HTTP Status: " +
+                response.status
+            );
+
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const blobUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+
         const link =
             document.createElement("a");
 
 
         link.href =
-            secureUrl;
+            blobUrl;
 
 
         link.download =
             fileName ||
             "receiving.pdf";
-
-
-        link.target =
-            "_blank";
 
 
         document.body.appendChild(
@@ -355,6 +377,18 @@ async function downloadReceiving(
 
 
         link.remove();
+
+
+        setTimeout(
+            function () {
+
+                URL.revokeObjectURL(
+                    blobUrl
+                );
+
+            },
+            1000
+        );
 
 
     } catch (error) {
