@@ -28,7 +28,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    color: #222;
+    color: #ffffff;
 }
 
 
@@ -506,6 +506,35 @@ body {
 
 
 /* =========================
+   CONTACT BUTTONS
+========================= */
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: -8px 0 20px;
+}
+
+.contact-btn {
+    flex: 1;
+    max-width: 150px;
+    height: 38px;
+    border: 1px solid #138808;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #222;
+    cursor: pointer;
+    background: #138808;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+}
+
+.contact-btn:active {
+    transform: scale(0.97);
+}
+
+/* =========================
    MOBILE
 ========================= */
 
@@ -670,6 +699,31 @@ body {
             </div>
 
         </div>
+
+    </div>
+
+
+    <!-- =====================
+         CONTACT BUTTONS
+    ====================== -->
+
+    <div class="contact-buttons">
+
+        <button
+            class="contact-btn"
+            onclick="window.open('https://wa.me/918340209021', '_blank')"
+        >
+            <span aria-label="WhatsApp" title="WhatsApp">🟢</span>
+            8340209021
+        </button>
+
+        <button
+            class="contact-btn"
+            onclick="window.location.href='tel:7352211697'"
+        >
+            <span aria-label="Call" title="Call">📞</span>
+            7352211697
+        </button>
 
     </div>
 
